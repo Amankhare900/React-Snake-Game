@@ -1,0 +1,15 @@
+.food{
+    height: 15px;
+    width: 15px;
+    background: Pink;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: blink-animation .8s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+}
+  
