@@ -5,5 +5,6 @@
     border-radius: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
-    transition: left 0.3s linear, top 0.3s linear; /* Added transitions for left and top */
+    transition: left 0.3s linear, top 0.3s linear;
+    z-index: 2; /* Added z-index to make the snake segment appear above the food */
 }

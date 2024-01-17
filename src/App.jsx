@@ -15,46 +15,32 @@ function App() {
     const [position, setPosition] = useState({ x: 100, y: 100 });
     const xStep = 20;
     const yStep = 15;
-    const [foodCenter, setFoodCenter] = useState({
-        x: position.x + 7.5,
-        y: position.y + 7.5,
-    });
-
-    console.log(xEat + "xfood " + yEat + " yfood");
-    let yEat = false;
-    let xEat = false;
-
-    if (direction !== "ArrowUp") {
-        yEat =
-            snakeSegments[0].y >= foodCenter.y &&
-            snakeSegments[0].y - 10 <= foodCenter.y;
-    }
-
-    if (direction !== "ArrowDown") {
-        yEat =
-            snakeSegments[0].y <= foodCenter.y &&
-            snakeSegments[0].y + 10 >= foodCenter.y;
-    }
-
-    if (direction !== "ArrowLeft") {
-        xEat =
-            snakeSegments[0].x >= foodCenter.x &&
-            snakeSegments[0].x - 10 <= foodCenter.x;
-    }
-
-    if (direction !== "ArrowRight") {
-        xEat =
-            snakeSegments[0].x <= foodCenter.x &&
-            snakeSegments[0].x + 10 >= foodCenter.x;
-    }
-
-    if (xEat && yEat) {
-        debugger;
-        const foodX = Math.floor(Math.random() * window.innerWidth);
-        const foodY = Math.floor(Math.random() * window.innerHeight);
-        setPosition({ x: foodX, y: foodY });
-        setFoodCenter({ x: foodX + 7.5, y: foodY + 7.5 });
-    }
+    useEffect(() => {
+        const head = snakeSegments[0];
+        const food = {
+            left: position.x - 5,
+            right: position.x + 20,
+            top: position.y - 5,
+            down: position.y + 20,
+        };
+        if (
+            head.x + 10 > food.left &&
+            head.x + 10 < food.right &&
+            head.y + 7.5 > food.top &&
+            head.y + 7.5 < food.down
+        ) {
+            const foodX = Math.floor(Math.random() * window.innerWidth);
+            const foodY = Math.floor(Math.random() * window.innerHeight);
+            setPosition({ x: foodX, y: foodY });
+            setSnakeSegments((prevSegments) => [
+                ...prevSegments,
+                {
+                    x: prevSegments[prevSegments.length - 1].x + 20,
+                    y: prevSegments[prevSegments.length - 1].y,
+                },
+            ]);
+        }
+    }, [snakeSegments, position]);
     useEffect(() => {
         const moveSnake = (d) => {
             setSnakeSegments((prevSegments) => {
