@@ -1,10 +1,101 @@
-.unit {
+.snakeSegment {
     height: 15px;
     width: 20px;
-    background: greenyellow;
-    border-radius: 50%;
+    background-color: #4caf50;
     position: absolute;
     transform: translate(-50%, -50%);
     transition: left 0.3s linear, top 0.3s linear;
-    z-index: 2; /* Added z-index to make the snake segment appear above the food */
+    border: 1px solid #2e7d32;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    animation: snakeMovement 0.3s linear infinite;
+}
+
+.head {
+    background-color: #ff5722;
+    border-radius: 50%;
+}
+
+@keyframes snakeMovement {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    50% {
+        transform: translate(-50%, -50%) rotate(5deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+}
+
+.eye {
+    width: 4px;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    animation: blink 0.8s steps(8, start) infinite;
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+.mouth {
+    width: 10px;
+    height: 2px;
+    background-color: #fff;
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+@keyframes openMouthAnimation {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(-45deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Apply the animation to the mouth */
+.openMouth {
+    animation: openMouthAnimation 0.3s ease-in-out;
+}
+.tongue {
+    width: 2px;
+    height: 8px;
+    background-color: #ff3d00;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform-origin: bottom center;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Animation for sticking out tongue effect */
+@keyframes stickOutTongueAnimation {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(-10deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Apply the animation to the tongue */
+.stickOutTongue {
+    animation: stickOutTongueAnimation 0.3s ease-in-out;
 }

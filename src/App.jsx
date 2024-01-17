@@ -17,10 +17,12 @@ function App() {
     const [direction, setDirection] = useState("ArrowLeft");
     let restartGameRef = useRef();
     const intervalIdRef = useRef(null);
+    const [openMouth, setOpenMouth] = useState(false);
     const [position, setPosition] = useState({ x: 100, y: 100 });
     const xStep = 20;
     const yStep = 15;
-
+    // const [speed, setSpeed] = useState(200);
+    // const highestSpeed = 70;
     useEffect(() => {
         const head = snakeSegments[0];
         const food = {
@@ -29,6 +31,15 @@ function App() {
             top: position.y - 5,
             down: position.y + 20,
         };
+        const foodDistance = calculateDistance(head, position);
+
+        const thresholdDistance = 30;
+
+        if (foodDistance < thresholdDistance) {
+            setOpenMouth(true);
+        } else {
+            setOpenMouth(false);
+        }
         if (
             head.x + 10 > food.left &&
             head.x + 10 < food.right &&
@@ -65,6 +76,10 @@ function App() {
     }, [snakeSegments, direction, position, foodEated, spacelFood]);
 
     useEffect(() => {
+        if (gameOver) {
+            clearInterval(intervalIdRef.current);
+            return;
+        }
         const moveSnake = (d) => {
             setSnakeSegments((prevSegments) => {
                 const newSegments = [...prevSegments];
@@ -165,14 +180,23 @@ function App() {
             clearInterval(intervalIdRef.current);
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [direction, snakeSegments]);
-
+    }, [direction, snakeSegments, gameOver]);
+    const calculateDistance = (point1, point2) => {
+        const dx = point1.x - point2.x;
+        const dy = point1.y - point2.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    };
     return (
         <>
             <DisplayScore score={foodEated} />
             {gameOver && <GameOver restartGame={restartGameRef.current} />}
             {snakeSegments.map((segment, index) => (
-                <Snake position={segment} key={index} />
+                <Snake
+                    position={segment}
+                    isHead={index === 0}
+                    isOpenMouth={openMouth}
+                    key={index}
+                />
             ))}
             <Food position={position} spacelFood={spacelFood} />
         </>
