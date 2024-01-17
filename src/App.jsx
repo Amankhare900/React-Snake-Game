@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Snake from "./components/Snake";
 import Food from "./components/SnakeFood";
+import DisplayScore from "./components/displayScore";
+import GameOver from "./components/GameOver";
 
 function App() {
     const [snakeSegments, setSnakeSegments] = useState([
@@ -9,12 +11,16 @@ function App() {
         { x: window.innerWidth / 2 + 40, y: window.innerHeight / 2 },
         { x: window.innerWidth / 2 + 60, y: window.innerHeight / 2 },
     ]);
-
+    const [spacelFood, setSpacelFood] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [foodEated, setFoodEated] = useState(0);
     const [direction, setDirection] = useState("ArrowLeft");
-
+    let restartGameRef = useRef();
+    const intervalIdRef = useRef(null);
     const [position, setPosition] = useState({ x: 100, y: 100 });
     const xStep = 20;
     const yStep = 15;
+
     useEffect(() => {
         const head = snakeSegments[0];
         const food = {
@@ -32,15 +38,32 @@ function App() {
             const foodX = Math.floor(Math.random() * window.innerWidth);
             const foodY = Math.floor(Math.random() * window.innerHeight);
             setPosition({ x: foodX, y: foodY });
-            setSnakeSegments((prevSegments) => [
-                ...prevSegments,
-                {
-                    x: prevSegments[prevSegments.length - 1].x + 20,
-                    y: prevSegments[prevSegments.length - 1].y,
-                },
-            ]);
+            setFoodEated(foodEated + 1);
+            if (foodEated !== 0 && foodEated % 4 === 0 && !spacelFood) {
+                setSpacelFood(true);
+            } else {
+                setSpacelFood(false);
+            }
+            if (direction === "ArrowUp" || direction === "ArrowDown") {
+                setSnakeSegments((prevSegments) => [
+                    ...prevSegments,
+                    {
+                        x: prevSegments[prevSegments.length - 1].x,
+                        y: prevSegments[prevSegments.length - 1].y + 15,
+                    },
+                ]);
+            } else {
+                setSnakeSegments((prevSegments) => [
+                    ...prevSegments,
+                    {
+                        x: prevSegments[prevSegments.length - 1].x + 20,
+                        y: prevSegments[prevSegments.length - 1].y,
+                    },
+                ]);
+            }
         }
-    }, [snakeSegments, position]);
+    }, [snakeSegments, direction, position, foodEated, spacelFood]);
+
     useEffect(() => {
         const moveSnake = (d) => {
             setSnakeSegments((prevSegments) => {
@@ -68,9 +91,62 @@ function App() {
                 return newSegments;
             });
         };
-        const intervalId = setInterval(() => {
+
+        const handleCollision = () => {
+            const head = snakeSegments[0];
+            const bodySegments = snakeSegments.slice(1);
+            const isColide = bodySegments.some((segment) => {
+                const currentSegment = {
+                    left: segment.x,
+                    right: segment.x + 20,
+                    top: segment.y,
+                    down: segment.y + 15,
+                };
+                const isColide =
+                    head.x + 10 > currentSegment.left &&
+                    head.x + 10 < currentSegment.right &&
+                    head.y + 7.5 > currentSegment.top &&
+                    head.y + 7.5 < currentSegment.down;
+                return isColide;
+            });
+            if (isColide) {
+                clearInterval(intervalIdRef.current);
+                setGameOver(true);
+            }
+        };
+
+        const restartGame = () => {
+            setSnakeSegments([
+                { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+                { x: window.innerWidth / 2 + 20, y: window.innerHeight / 2 },
+                { x: window.innerWidth / 2 + 40, y: window.innerHeight / 2 },
+                { x: window.innerWidth / 2 + 60, y: window.innerHeight / 2 },
+            ]);
+            setFoodEated(0);
+            setDirection("ArrowLeft");
+            setPosition({ x: 100, y: 100 });
+            setGameOver(false);
+
+            if (intervalIdRef.current) {
+                clearInterval(intervalIdRef.current);
+            }
+
+            intervalIdRef.current = setInterval(() => {
+                moveSnake(direction);
+                handleCollision();
+            }, 200);
+        };
+        restartGameRef.current = restartGame;
+
+        if (intervalIdRef.current) {
+            clearInterval(intervalIdRef.current);
+        }
+
+        intervalIdRef.current = setInterval(() => {
             moveSnake(direction);
+            handleCollision();
         }, 200);
+
         const handleKeyDown = (event) => {
             const key = event.key;
             if (
@@ -86,17 +162,19 @@ function App() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => {
-            clearInterval(intervalId);
+            clearInterval(intervalIdRef.current);
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [direction, setSnakeSegments]);
+    }, [direction, snakeSegments]);
 
     return (
         <>
+            <DisplayScore score={foodEated} />
+            {gameOver && <GameOver restartGame={restartGameRef.current} />}
             {snakeSegments.map((segment, index) => (
                 <Snake position={segment} key={index} />
             ))}
-            <Food position={position} />
+            <Food position={position} spacelFood={spacelFood} />
         </>
     );
 }

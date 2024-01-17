@@ -1,15 +1,41 @@
-.food{
+.food {
     height: 15px;
     width: 15px;
     background: Pink;
     border-radius: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
-    animation: blink-animation .8s steps(5, start) infinite;
+    animation: bounce 0.5s ease-in-out infinite alternate;
+}
+.specialFood {
+    width: 20px;
+    height: 20px;
+    background-color: #ffe1a9; /* Light yellow color */
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: blink-animation 0.8s steps(8, start) infinite;
 }
 @keyframes blink-animation {
     to {
-      visibility: hidden;
+        visibility: hidden;
     }
 }
-  
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
