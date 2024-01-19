@@ -82,7 +82,6 @@
     transition: transform 0.3s ease-in-out;
 }
 
-/* Animation for sticking out tongue effect */
 @keyframes stickOutTongueAnimation {
     0% {
         transform: rotate(0deg);
@@ -95,7 +94,6 @@
     }
 }
 
-/* Apply the animation to the tongue */
 .stickOutTongue {
     animation: stickOutTongueAnimation 0.3s ease-in-out;
 }

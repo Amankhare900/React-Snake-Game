@@ -1,7 +1,7 @@
 import Style from "./snakeFood.module.css";
 import PropTypes from "prop-types";
-const SnakeFood = ({ position: { x, y }, spacelFood }) => {
-    const foodClassName = spacelFood ? Style.specialFood : Style.food;
+const SnakeFood = ({ position: { x, y }, specialFood }) => {
+    const foodClassName = specialFood ? Style.specialFood : Style.food;
     return (
         <div
             className={foodClassName}
@@ -12,6 +12,6 @@ const SnakeFood = ({ position: { x, y }, spacelFood }) => {
 
 SnakeFood.propTypes = {
     position: PropTypes.object.isRequired,
-    spacelFood: PropTypes.bool,
+    specialFood: PropTypes.bool,
 };
 export default SnakeFood;
